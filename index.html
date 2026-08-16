@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geop.id — Forensik Foto & Geolokasi Digital</title>
+<meta name="description" content="Tool forensik web untuk membaca metadata EXIF, mengekstrak GPS, dan mendeteksi manipulasi foto. 100% client-side, gratis, dan privat.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='42' r='32' fill='none' stroke='%2322d3ee' stroke-width='8'/%3E%3Ccircle cx='50' cy='42' r='10' fill='%2322d3ee'/%3E%3Cpath d='M50 74 L50 94' stroke='%2322d3ee' stroke-width='8' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a class="brand" href="#">
+        <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="42" r="32" stroke="#22d3ee" stroke-width="8"/>
+          <circle cx="50" cy="42" r="10" fill="#22d3ee"/>
+          <path d="M50 74 L50 94" stroke="#22d3ee" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+        Geop<span>.id</span>
+      </a>
+      <div class="nav-links">
+        <a href="#analyzer">Analisis</a>
+        <a href="#edukasi">Edukasi</a>
+        <a href="#tentang">Tentang</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-badge">🔒 100% Privat — File diproses di browser Anda, tidak pernah diunggah ke server</div>
+    <h1>Bongkar <span class="grad">Metadata & Lokasi</span><br>di Balik Sebuah Foto</h1>
+    <p class="lead">Geop.id adalah tool forensik digital yang membaca jejak tersembunyi dalam foto Anda: EXIF, koordinat GPS, sidik jari digital (SHA-256), serta deteksi otomatis apakah foto pernah diedit atau dimanipulasi.</p>
+    <div class="hero-cta">
+      <a href="#analyzer" class="btn btn-primary">🚀 Mulai Analisis</a>
+      <a href="#edukasi" class="btn btn-ghost">Pelajari EXIF</a>
+    </div>
+    <div class="hero-stats">
+      <div class="chip"><span>✓</span> Client-Side</div>
+      <div class="chip"><span>✓</span> Gratis & Open Source</div>
+      <div class="chip"><span>✓</span> Tanpa Registrasi</div>
+      <div class="chip"><span>✓</span> Batch Scan</div>
+    </div>
+  </header>
+
+  <main>
+    <section id="analyzer" class="section">
+      <div class="section-head">
+        <h2>📡 Pusat Analisis Forensik</h2>
+        <p class="muted">Unggah foto atau seluruh folder untuk pemindaian massal</p>
+      </div>
+
+      <div class="dropzone" id="dropzone">
+        <svg class="dz-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <p class="dz-title"><strong>Jatuhkan foto di sini</strong></p>
+        <p class="muted">atau</p>
+        <div class="dz-buttons">
+          <button id="btnFiles" class="btn btn-primary">📸 Pilih Foto</button>
+          <button id="btnFolder" class="btn btn-ghost">📁 Pilih Folder</button>
+        </div>
+        <p class="muted small">Format: JPG / JPEG · Maksimal 200 file</p>
+        <input type="file" id="inputFiles" accept=".jpg,.jpeg,image/jpeg" multiple hidden>
+        <input type="file" id="inputFolder" webkitdirectory multiple hidden>
+      </div>
+
+      <div id="progressWrap" class="progress-wrap hidden">
+        <div class="progress-bar"><div id="progressFill" style="width:0%"></div></div>
+        <p id="progressText">Mempersiapkan...</p>
+      </div>
+
+      <div id="summary" class="summary hidden">
+        <div class="stat-card">
+          <div class="stat-label">Total Foto</div>
+          <div class="stat-value" id="statTotal">0</div>
+        </div>
+        <div class="stat-card ok">
+          <div class="stat-label">Dengan GPS</div>
+          <div class="stat-value" id="statGps">0</div>
+        </div>
+        <div class="stat-card warn">
+          <div class="stat-label">Tanpa Metadata</div>
+          <div class="stat-value" id="statNoExif">0</div>
+        </div>
+        <div class="stat-card bad">
+          <div class="stat-label">Terindikasi Editing</div>
+          <div class="stat-value" id="statEdited">0</div>
+        </div>
+        <div class="export-row">
+          <button id="btnCSV" class="btn btn-ghost">⬇ Export CSV</button>
+          <button id="btnJSON" class="btn btn-ghost">⬇ Export JSON</button>
+          <button id="btnClear" class="btn btn-danger">🗑 Bersihkan</button>
+        </div>
+      </div>
+
+      <div id="results" class="results"></div>
+    </section>
+
+    <section id="edukasi" class="section">
+      <div class="section-head">
+        <h2>📚 Edukasi Forensik Digital</h2>
+        <p class="muted">Pelajari apa yang disembunyikan oleh foto Anda</p>
+      </div>
+      <div class="edu-grid">
+        <div class="edu-card">
+          <div class="edu-icon">📝</div>
+          <h3>Apa itu EXIF?</h3>
+          <p>Exchangeable Image File Format adalah metadata yang tersimpan otomatis oleh kamera saat memotret: merek perangkat, waktu pengambilan, setting lensa, hingga lokasi GPS.</p>
+        </div>
+        <div class="edu-card">
+          <div class="edu-icon">👻</div>
+          <h3>Ghost Tag Xiaomi</h3>
+          <p>Beberapa HP Android membuat folder GPS kosong di dalam foto meskipun lokasi tidak aktif — ini disebut "Ghost Tag". Geop.id pintar mendeteksi dan memfilter data hantu ini.</p>
+        </div>
+        <div class="edu-card">
+          <div class="edu-icon">🛡️</div>
+          <h3>Lindungi Privasi Anda</h3>
+          <p>Sebelum membagikan foto ke internet, hapus metadata GPS terlebih dahulu. Foto di media sosial umumnya sudah otomatis di-strip, tetapi foto yang dikirim via email/WA asli bisa membocorkan rumah Anda.</p>
+        </div>
+        <div class="edu-card">
+          <div class="edu-icon">🔍</div>
+          <h3>Deteksi Manipulasi</h3>
+          <p>Kamera asli menandai EXIF dengan nama model HP. Jika EXIF menyebutkan "Adobe Photoshop", "Snapseed", atau "VSCO", besar kemungkinan foto tersebut telah disunting.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="tentang" class="section about">
+      <h2>Tentang Geop.id</h2>
+      <p>Geop.id dibuat sebagai alat edukasi literasi digital dan bantuan investigasi forensik ringan. Semua pemrosesan dilakukan <strong>di perangkat Anda sendiri</strong> menggunakan JavaScript — file foto tidak pernah meninggalkan browser Anda.</p>
+      <p class="muted small">⚖️ <strong>Disclaimer:</strong> Tool ini ditujukan untuk penggunaan edukasi dan analisis pribadi. Pengguna bertanggung jawab penuh atas kepatuhan terhadap hukum privasi yang berlaku di wilayahnya.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>© 2026 <strong>Geop.id</strong> — Dibuat untuk edukasi literasi digital di Indonesia.</p>
+      <p class="muted small">Versi Web v1.0 · Berjalan 100% di browser</p>
+    </div>
+  </footer>
+
+  <script src="js/exif.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
